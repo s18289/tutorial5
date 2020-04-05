@@ -1,23 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using WebApplication1.DAL;
+using WebApplication1.Models;
+using WebApplication1.Services;
 
 namespace WebApplication1.Controllers
 {
-    [ApiController]
     [Route("api/enrollment")]
-    public class EnrollmentsController : Controller
+    [ApiController]
+    public class EnrollmentsController : ControllerBase
     {
-        private IDbService _dbService;
 
-        public EnrollmentsController(IDbService dbService)
+        private IStudentServiceDb _service;
+
+        public EnrollmentsController(IStudentServiceDb service)
         {
-            _dbService = dbService;
+            _service = service;
         }
 
-        
+        [HttpPost]
+        public IActionResult EnrollStudent(Student student)
+        {
+            return Ok();
+        }
+
+        [HttpPost("promote")]
+        public IActionResult PromoteStudents()
+        {
+            return Ok();
+        }
     }
 }

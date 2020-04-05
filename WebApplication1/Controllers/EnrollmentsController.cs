@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebApplication1.DTOs.Requests;
 using WebApplication1.Models;
 using WebApplication1.Services;
 
@@ -23,9 +24,9 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
-        public IActionResult EnrollStudent(Student student)
+        public IActionResult EnrollStudent(EnrollStudentRequest request)
         {
-            return Ok();
+            return _service.EnrollStudent(request);
         }
 
         [HttpPost("promote")]

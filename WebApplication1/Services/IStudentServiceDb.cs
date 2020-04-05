@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +9,7 @@ namespace WebApplication1.Services
 {
     public interface IStudentServiceDb
     {
-        void EnrollStudent(EnrollStudentRequest request);
-        void PromoteStudents(int semester, string studies);
+        IActionResult EnrollStudent(EnrollStudentRequest request);
+        IActionResult PromoteStudents(int semester, string studies);
     }
 }

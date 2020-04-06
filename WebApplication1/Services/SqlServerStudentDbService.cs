@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication1.DTOs.Requests;
@@ -21,7 +22,7 @@ namespace WebApplication1.Services
             using (var com = new SqlCommand())
             {
                 com.Connection = con;
-                com.CommandText = "SELECT * FROM studies WHERE Name=@Name";
+                com.CommandText = "SELECT * FROM Studies WHERE Name=@Name";
                 com.Parameters.AddWithValue("Name", request.Studies);
                 con.Open();
                 SqlTransaction transaction = con.BeginTransaction();
@@ -77,10 +78,10 @@ namespace WebApplication1.Services
                     com.Parameters.AddWithValue("FirstName", request.FirstName);
                     com.Parameters.AddWithValue("LastName", request.LastName);
                     com.Parameters.AddWithValue("BirthDate", request.BirthDate);
+                    com.Parameters.AddWithValue("idStudies", idEnrollment);
                     com.ExecuteNonQuery();
+                    transaction.Commit();
                 }
-                transaction.Commit();
-
                 //4. return Enrollment model
                 return EnrollStudent(request);
             }

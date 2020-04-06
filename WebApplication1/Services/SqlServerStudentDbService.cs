@@ -13,6 +13,7 @@ namespace WebApplication1.Services
         private readonly string connectionString = "Data Source=db-mssql;Initial Catalog=s18289;Integrated Security=True";
         private int idStudies, idEnrollment;
         private DateTime date = DateTime.Now;
+       
 
         public IActionResult EnrollStudent(EnrollStudentRequest request)
         {
@@ -26,7 +27,7 @@ namespace WebApplication1.Services
                 SqlTransaction transaction = con.BeginTransaction();
                 com.Transaction = transaction;
 
-                //1. Check if studies exists -> 404
+                //1. Check if studies exists -> 400
                 var dr = com.ExecuteReader();
                 if(dr.Read())
                 {
@@ -79,8 +80,9 @@ namespace WebApplication1.Services
                     com.ExecuteNonQuery();
                 }
                 transaction.Commit();
+
                 //4. return Enrollment model
-                return Ok();
+                return EnrollStudent(request);
             }
         }
 

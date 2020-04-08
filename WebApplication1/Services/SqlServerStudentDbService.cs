@@ -13,7 +13,7 @@ namespace WebApplication1.Services
     {
         private readonly string connectionString = "Data Source=db-mssql;Initial Catalog=s18289;Integrated Security=True";
         private int idStudies, idEnrollment;
-        private DateTime date = DateTime.Now;
+        private readonly DateTime date = DateTime.Now;
        
 
         public IActionResult EnrollStudent(EnrollStudentRequest request)
@@ -22,11 +22,16 @@ namespace WebApplication1.Services
             using (var com = new SqlCommand())
             {
                 com.Connection = con;
-                com.CommandText = "SELECT * FROM Studies WHERE Name=@Name";
+                com.CommandText = "SELECT * FROM studies WHERE Name=@Name";
                 com.Parameters.AddWithValue("Name", request.Studies);
                 con.Open();
                 SqlTransaction transaction = con.BeginTransaction();
                 com.Transaction = transaction;
+
+                if(request.Studies == null)
+                {
+                    return BadRequest("Studies == null");
+                }
 
                 //1. Check if studies exists -> 400
                 var dr = com.ExecuteReader();
@@ -36,6 +41,7 @@ namespace WebApplication1.Services
                 }
                 else
                 {
+                    dr.Close();
                     transaction.Rollback();
                     return BadRequest("Studies does not exist!");
                 }
@@ -45,21 +51,23 @@ namespace WebApplication1.Services
                 com.CommandText = "SELECT MAX(StartDate) FROM enrollment WHERE semester = 1 AND idStudy=@idStudies";
                 com.Parameters.AddWithValue("idStudies", idStudies);
                 dr = com.ExecuteReader();
-                if(dr.Read())
+                if(!dr.Read())
                 {
                     dr.Close();
                 }
                 else
                 {
+                    dr.Close();
                     com.CommandText = "SELECT MAX(idEnrollment) 'idEnrollment' FROM enrollment";
                     dr = com.ExecuteReader();
                     dr.Read();
                     idEnrollment = (int)dr["idEnrollment"] + 1;
                     dr.Close();
-                    com.CommandText = "INSERT INTO enrollment VALUES (@idEnrollment, 1, idStudies, date)";
+                    com.CommandText = "INSERT INTO enrollment VALUES (@idEnrollment, 1, " + idStudies + ", '" + date + "')";
                     com.Parameters.AddWithValue("idEnrollment", idEnrollment);
                     com.ExecuteNonQuery();
                 }
+                dr.Close();
 
                 //3. Check if index does not exists -> INSERT/400
                 com.CommandText = "SELECT * FROM student WHERE IndexNumber=@IndexNumber";
@@ -67,24 +75,29 @@ namespace WebApplication1.Services
                 dr = com.ExecuteReader();
                 if(dr.Read())
                 {
+                    dr.Close();
                     transaction.Rollback();
                     return BadRequest("Student with IndexNumber: " + request.IndexNumber + " already exists!");
                 }
                 else
                 {
                     dr.Close();
-                    com.CommandText = "INSERT INTO student VALUES (@IndexNumber, @FirstName, @LastName, @BirthDate, @idEnrollment)";
-                    com.Parameters.AddWithValue("IndexNumber", request.IndexNumber);
+                    com.CommandText = "INSERT INTO student VALUES (@sNumber, @FirstName, @LastName, @BirthDate, @idEnroll)";
+                    com.Parameters.AddWithValue("sNumber", request.IndexNumber);
                     com.Parameters.AddWithValue("FirstName", request.FirstName);
                     com.Parameters.AddWithValue("LastName", request.LastName);
                     com.Parameters.AddWithValue("BirthDate", request.BirthDate);
-                    com.Parameters.AddWithValue("idStudies", idEnrollment);
+                    com.Parameters.AddWithValue("idEnroll", idEnrollment);
                     com.ExecuteNonQuery();
-                    transaction.Commit();
                 }
-                //4. return Enrollment model
-                return EnrollStudent(request);
+                transaction.Commit();
             }
+            return Ok("New student has been enrolled to study\n" +
+                      "IndexNumber: " + request.IndexNumber + "\n" +
+                      "Name: " + request.FirstName + "\n" +
+                      "Surname: " + request.LastName + "\n" +
+                      "BirthDate: " + request.BirthDate + "\n" +
+                      "Studies: " + request.Studies);
         }
 
         public IActionResult PromoteStudents(int semester, string studies)

@@ -16,7 +16,7 @@ namespace WebApplication1.Controllers
     public class EnrollmentsController : ControllerBase
     {
 
-        private IStudentServiceDb _service;
+        private readonly IStudentServiceDb _service;
 
         public EnrollmentsController(IStudentServiceDb service)
         {
@@ -30,7 +30,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost("promote")]
-        public IActionResult PromoteStudents()
+        public IActionResult PromoteStudents(Enrollment enrollment)
         {
             return Ok();
         }

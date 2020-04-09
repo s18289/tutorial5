@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication1.DTOs.Requests;
+using WebApplication1.Models;
 
 namespace WebApplication1.Services
 {
@@ -92,6 +93,7 @@ namespace WebApplication1.Services
                 }
                 transaction.Commit();
             }
+            //return
             return Ok("New student has been enrolled to study\n" +
                       "IndexNumber: " + request.IndexNumber + "\n" +
                       "Name: " + request.FirstName + "\n" +
@@ -100,8 +102,12 @@ namespace WebApplication1.Services
                       "Studies: " + request.Studies);
         }
 
-        public IActionResult PromoteStudents(int semester, string studies)
+        public IActionResult PromoteStudents(Enrollment enrollment)
         {
+
+
+            
+            //return
             return Ok();
         }
     }

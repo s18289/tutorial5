@@ -10,6 +10,6 @@ namespace WebApplication1.Models
         public int IdEnrollment { get; set; }
         public int IdStudy { get; set; }
         public int Semester { get; set; }
-        public string StudiesName { get; set; }
+        public string Studies { get; set; }
     }
 }

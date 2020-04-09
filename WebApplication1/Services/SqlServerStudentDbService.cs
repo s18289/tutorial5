@@ -114,7 +114,7 @@ namespace WebApplication1.Services
                 com.CommandText = "SELECT * FROM Enrollment e " +
                                   "INNER JOIN Studies s ON e.idstudy=s.idstudy " +
                                   "WHERE s.Name=@Studies AND e.semester=@Semester";
-                com.Parameters.AddWithValue("Studies", enrollment.StudiesName);
+                com.Parameters.AddWithValue("Studies", enrollment.Studies);
                 com.Parameters.AddWithValue("Semester", enrollment.Semester);
                 con.Open();
 
@@ -132,7 +132,7 @@ namespace WebApplication1.Services
                         enroll.IdEnrollment = (int)reader["idEnrollment"];
                         enroll.IdStudy = (int)reader["idstudy"];
                         enroll.Semester = (int)reader["Semester"];
-                        enroll.StudiesName = enrollment.StudiesName;
+                        enroll.Studies = enrollment.Studies;
                     }
                 }
                 else
@@ -142,7 +142,9 @@ namespace WebApplication1.Services
                 }
             }
             //return
-            return Ok(enroll);
+            return Ok("Success!\n" +
+                      "All students from Semester: " + enrollment.Semester + " and " + "Study: " + enrollment.Studies + 
+                      " were promoted to the Semester: " + (int)(enrollment.Semester+1));
         }
     }
 }

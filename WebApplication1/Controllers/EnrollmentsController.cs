@@ -32,7 +32,7 @@ namespace WebApplication1.Controllers
         [HttpPost("promote")]
         public IActionResult PromoteStudents(Enrollment enrollment)
         {
-            return Ok();
+            return _service.PromoteStudents(enrollment);
         }
     }
 }

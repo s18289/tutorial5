@@ -105,10 +105,44 @@ namespace WebApplication1.Services
         public IActionResult PromoteStudents(Enrollment enrollment)
         {
 
+            var enroll = new Enrollment();
 
-            
+            using (SqlConnection con = new SqlConnection(connectionString))
+            using (SqlCommand com = new SqlCommand())
+            {
+                com.Connection = con;
+                com.CommandText = "SELECT * FROM Enrollment e " +
+                                  "INNER JOIN Studies s ON e.idstudy=s.idstudy " +
+                                  "WHERE s.Name=@Studies AND e.semester=@Semester";
+                com.Parameters.AddWithValue("Studies", enrollment.StudiesName);
+                com.Parameters.AddWithValue("Semester", enrollment.Semester);
+                con.Open();
+
+
+                var dr = com.ExecuteReader();
+                if(dr.Read())
+                {
+                    dr.Close();
+                    com.CommandText = "PromoteStudents";
+                    com.CommandType = System.Data.CommandType.StoredProcedure;
+
+                    var reader = com.ExecuteReader();
+                    if(reader.Read())
+                    {
+                        enroll.IdEnrollment = (int)reader["idEnrollment"];
+                        enroll.IdStudy = (int)reader["idstudy"];
+                        enroll.Semester = (int)reader["Semester"];
+                        enroll.StudiesName = enrollment.StudiesName;
+                    }
+                }
+                else
+                {
+                    dr.Close();
+                    return BadRequest("No such record in Database");
+                }
+            }
             //return
-            return Ok();
+            return Ok(enroll);
         }
     }
 }
